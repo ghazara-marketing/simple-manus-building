@@ -16,11 +16,11 @@ export default function Header() {
 
   return (
     <header className="fixed w-full bg-white shadow-md z-50" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <div className="text-2xl font-bold text-primary font-poppins">
-          {t.companyName}
-        </div>
+        <a href="#home" className="flex items-center gap-2 hover:opacity-80 transition">
+          <img src="/logo.webp" alt="Ghazara Logo" className="h-12 w-auto" />
+        </a>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex gap-8 items-center">

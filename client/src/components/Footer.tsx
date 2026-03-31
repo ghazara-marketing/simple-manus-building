@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-2xl font-bold mb-4 font-poppins">{t.companyName}</h3>
+            <img src="/logo.webp" alt="Ghazara Logo" className="h-16 w-auto mb-4" />
             <p className="text-gray-400 font-cairo leading-relaxed">
               {t.aboutDesc}
             </p>
