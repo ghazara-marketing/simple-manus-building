@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, Phone, MapPin, Loader } from 'lucide-react'
 import { useLanguage, translations } from '@/contexts/LanguageContext'
+import emailjs from '@emailjs/browser'
+
+// Initialize EmailJS
+emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '')
 
 export default function CTA() {
   const { language, isRTL } = useLanguage()
@@ -13,6 +17,10 @@ export default function CTA() {
     message: '',
   })
 
+  const [isLoading, setIsLoading] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [statusMessage, setStatusMessage] = useState('')
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
@@ -20,12 +28,44 @@ export default function CTA() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    // Here you can add email sending logic
-    alert(language === 'ar' ? 'شكراً لتواصلك معنا!' : 'Thank you for contacting us!')
-    setFormData({ name: '', email: '', phone: '', message: '' })
+    setIsLoading(true)
+    setSubmitStatus('idle')
+
+    try {
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+
+      if (!serviceId || !templateId) {
+        throw new Error('EmailJS configuration is missing')
+      }
+
+      const response = await emailjs.send(serviceId, templateId, {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+      })
+
+      if (response.status === 200) {
+        setSubmitStatus('success')
+        setStatusMessage(language === 'ar' ? 'تم إرسال رسالتك بنجاح!' : 'Your message has been sent successfully!')
+        setFormData({ name: '', email: '', phone: '', message: '' })
+        setTimeout(() => setSubmitStatus('idle'), 5000)
+      }
+    } catch (error) {
+      setSubmitStatus('error')
+      setStatusMessage(
+        language === 'ar'
+          ? 'حدث خطأ في إرسال الرسالة. تأكد من إعدادات EmailJS.'
+          : 'Error sending message. Please check EmailJS configuration.'
+      )
+      console.error('EmailJS error:', error)
+      setTimeout(() => setSubmitStatus('idle'), 5000)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -77,6 +117,7 @@ export default function CTA() {
               className="w-full mb-4 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 font-cairo"
               required
               dir={isRTL ? 'rtl' : 'ltr'}
+              disabled={isLoading}
             />
             <input
               type="email"
@@ -87,6 +128,7 @@ export default function CTA() {
               className="w-full mb-4 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 font-cairo"
               required
               dir="ltr"
+              disabled={isLoading}
             />
             <input
               type="tel"
@@ -96,6 +138,7 @@ export default function CTA() {
               onChange={handleChange}
               className="w-full mb-4 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 font-cairo"
               dir="ltr"
+              disabled={isLoading}
             />
             <textarea
               name="message"
@@ -106,13 +149,26 @@ export default function CTA() {
               className="w-full mb-6 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 resize-none font-cairo"
               required
               dir={isRTL ? 'rtl' : 'ltr'}
+              disabled={isLoading}
             ></textarea>
             <button
               type="submit"
-              className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-800 transition font-semibold font-cairo"
+              disabled={isLoading}
+              className="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-800 transition font-semibold font-cairo disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
+              {isLoading && <Loader size={20} className="animate-spin" />}
               {t.send}
             </button>
+            {submitStatus === 'success' && (
+              <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-lg font-cairo text-center">
+                {statusMessage}
+              </div>
+            )}
+            {submitStatus === 'error' && (
+              <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-lg font-cairo text-center">
+                {statusMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>
