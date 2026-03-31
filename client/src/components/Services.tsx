@@ -1,5 +1,4 @@
 import React from 'react'
-import { Zap, TrendingUp, Briefcase, ShoppingCart } from 'lucide-react'
 import { useLanguage, translations } from '@/contexts/LanguageContext'
 
 export default function Services() {
@@ -8,22 +7,22 @@ export default function Services() {
 
   const services = [
     {
-      icon: Zap,
+      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663056479406/itk3sBecz3URf43TyzDVAM/service-digital-marketing-HAbi9gy7oELV6gN3QfSQNm.webp',
       titleKey: 'service1Title',
       descKey: 'service1Desc',
     },
     {
-      icon: TrendingUp,
+      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663056479406/itk3sBecz3URf43TyzDVAM/service-business-consulting-nWGtZ7jyazFkzEDBsA8Svy.webp',
       titleKey: 'service2Title',
       descKey: 'service2Desc',
     },
     {
-      icon: Briefcase,
+      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663056479406/itk3sBecz3URf43TyzDVAM/service-project-management-Y9MAaaikFsBQLoRoJZtppE.webp',
       titleKey: 'service3Title',
       descKey: 'service3Desc',
     },
     {
-      icon: ShoppingCart,
+      image: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663056479406/itk3sBecz3URf43TyzDVAM/service-ecommerce-3wkvUCmxKrFM8NkSbf8UyS.webp',
       titleKey: 'service4Title',
       descKey: 'service4Desc',
     },
@@ -41,17 +40,16 @@ export default function Services() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => {
-            const Icon = service.icon
             const title = t[service.titleKey as keyof typeof t]
             const desc = t[service.descKey as keyof typeof t]
 
             return (
               <div
                 key={index}
-                className="p-6 bg-gray-50 rounded-xl hover:shadow-lg transition hover:bg-white duration-300 border border-gray-100"
+                className="p-6 bg-gray-50 rounded-xl hover:shadow-lg transition hover:bg-white duration-300 border border-gray-100 flex flex-col items-center text-center"
               >
-                <div className="bg-primary text-white w-14 h-14 rounded-lg flex items-center justify-center mb-4">
-                  <Icon size={28} />
+                <div className="w-24 h-24 mb-4 flex-shrink-0">
+                  <img src={service.image} alt={title} className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3 font-cairo">{title}</h3>
                 <p className="text-gray-600 font-cairo leading-relaxed">{desc}</p>
